@@ -5,6 +5,7 @@ import { createRoot } from 'react-dom/client'; // Import createRoot
 import { createApp } from 'vue';
 import VueApp from './vue/VueApp.vue';
 import ReactApp from './react/ReactApp.jsx';
+import HomePage from './vue/HomePage.vue'; // Import HomePage
 import { oktaAuth } from './auth/OktaAuth'; // Use named import
 import { Security } from '@okta/okta-react'; // Import Security component
 
@@ -12,6 +13,27 @@ import { Security } from '@okta/okta-react'; // Import Security component
 const restoreOriginalUri = async (_oktaAuth, originalUri) => {
   window.location.replace(originalUri || '/');
 };
+
+// Register Home Page
+registerApplication({
+  name: 'home-page',
+  app: () => Promise.resolve({
+    bootstrap: [() => Promise.resolve()],
+    mount: () => {
+      const app = createApp(HomePage);
+      app.mount('#vue');
+      return Promise.resolve();
+    },
+    unmount: () => {
+      const vueInstance = document.getElementById('vue').__vue_app__;
+      if (vueInstance) {
+        vueInstance.unmount();
+      }
+      return Promise.resolve();
+    },
+  }),
+  activeWhen: (location) => location.pathname === '/',
+});
 
 // Register Vue App
 registerApplication({
